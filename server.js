@@ -20,7 +20,10 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 })
   .then(() => console.log("Conectado ao MongoDB Atlas"))
-  .catch(err => console.error("Erro ao conectar ao MongoDB", err));
+  .catch(err => {
+    console.error("Erro ao conectar ao MongoDB", err);
+    process.exit(1); // Finaliza o processo em caso de erro de conexão
+  });
 
 // Importar rotas
 const baseRoutes = require('./routes/baseRoutes');
@@ -44,8 +47,15 @@ app.use((err, req, res, next) => {
 });
 
 // Configuração do IP e Porta do Servidor
-const IP = process.env.IP || '127.0.0.1';
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, IP, () => {
-  console.log(`Servidor rodando em http://${IP}:${PORT}`);
-});
+const IP = process.env.IP || '0.0.0.0'; // Use '0.0.0.0' para aceitar conexões de qualquer IP
+const PORT = process.env.PORT || 4010;
+
+// Iniciar o servidor
+try {
+  app.listen(PORT, IP, () => {
+    console.log(`Servidor rodando em http://${IP}:${PORT}`);
+  });
+} catch (err) {
+  console.error("Erro ao iniciar o servidor", err);
+  process.exit(1);
+}
