@@ -11,6 +11,20 @@ exports.criarPaciente = async (req, res, next) => {
       req.body.timestamp = timestamp;
     }
 
+    // Buscar o último paciente para obter o último idunico
+    const ultimoPaciente = await Base.findOne().sort({ idunico: -1 });
+
+    // Gerar o próximo idunico
+    let novoIdunico = 'M240001'; // Valor padrão caso não exista nenhum registro
+    if (ultimoPaciente && ultimoPaciente.idunico) {
+      // Extrair o número do último idunico e incrementar
+      const numeroAtual = parseInt(ultimoPaciente.idunico.slice(3)) + 1;
+      novoIdunico = `M24${String(numeroAtual).padStart(4, '0')}`;
+    }
+
+    // Adicionar o novo idunico ao corpo da requisição
+    req.body.idunico = novoIdunico;
+
     const novoPaciente = new Base(req.body);
     const pacienteSalvo = await novoPaciente.save();
     console.log('Cadastro Feito com Sucesso!:', pacienteSalvo); // Log do aluno adicionado

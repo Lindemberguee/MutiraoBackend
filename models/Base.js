@@ -29,6 +29,10 @@ const baseSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  idunico: {
+    type: String,
+    required: false
+  },
   // Adicionando campos para informações da requisição
   ip: {
     type: String,
