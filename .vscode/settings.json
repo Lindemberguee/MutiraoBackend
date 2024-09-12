@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "undefined/subscriptions/37c13413-71f6-41d7-8a18-611bfff76bfc/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/backendmutirao",
+  "appService.deploySubpath": "."
+}

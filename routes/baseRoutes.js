@@ -12,6 +12,7 @@ router.post('/base', [
     body('telefone').trim().escape().not().isEmpty().withMessage('Telefone é obrigatório'),
     body('tipoAtendimento').trim().escape().not().isEmpty().withMessage('Atendimento é obrigatório'),
     body('idfamiliar').trim().escape().not().isEmpty().withMessage('Atendimento é obrigatório'),
+    body('idunico').trim().escape().not().isEmpty().withMessage('ID único é obrigatório'),
 ], function(req, res, next) {
     // Adicione as informações relevantes da requisição ao corpo do paciente
     req.body.ip = req.ip;
