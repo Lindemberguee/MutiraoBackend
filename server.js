@@ -3,16 +3,22 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet'); // Para segurança adicional
+const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 
 const app = express();
+
 
 // Middleware
 app.use(cors());
 app.use(helmet()); // Adiciona cabeçalhos de segurança HTTP
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Adicionar as rotas de autenticação
+app.use('/api/auth', authRoutes);
+
 
 // Conectar ao MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI, {

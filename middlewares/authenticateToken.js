@@ -1,22 +1,26 @@
+// middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
-const authenticateToken = (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  console.log('Authorization Header:', authHeader);  // Log do cabeçalho de autorização
-
-  if (!authHeader) return res.status(401).send('Acesso negado. Nenhum token fornecido.');
-
-  const token = authHeader.split(' ')[1];
-  if (!token) return res.status(401).send('Acesso negado. Token inválido.');
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    console.error('Erro na verificação do JWT:', error.message);
-    res.status(401).send('Acesso negado. Token inválido ou expirado.');
+  if (!authHeader) {
+    console.log('Token não fornecido'); // Log para token ausente
+    return res.status(403).json({ message: 'Token não fornecido' });
   }
-};
 
-module.exports = authenticateToken;
+  const token = authHeader.split(' ')[1]; // Extrai o token do formato Bearer
+  if (!token) {
+    console.log('Formato de token inválido'); // Log para formato incorreto
+    return res.status(403).json({ message: 'Formato de token inválido' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log('Token inválido:', err.message); // Log do erro de validação
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+    console.log('Token verificado com sucesso, userId:', decoded.userId); // Log de sucesso
+    req.userId = decoded.userId;
+    next();
+  });
+};
