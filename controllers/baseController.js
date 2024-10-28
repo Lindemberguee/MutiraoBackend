@@ -67,16 +67,19 @@ exports.excluirPaciente = async (req, res, next) => {
 };
 
 // Função para obter a base de pacientes existentes
+
 exports.obterBase = async (req, res) => {
   try {
-    const pacientes = await Base.find();
+    const { nome } = req.query;
+    const filtro = nome ? { nome: new RegExp(nome, 'i') } : {}; // Usar regex para busca parcial, case-insensitive
+
+    const pacientes = await Base.find(filtro);
     return res.status(200).json(pacientes);
   } catch (error) {
     console.error('Erro ao obter a base de pacientes:', error);
     return res.status(500).json({ error: 'Erro ao obter a base de pacientes' });
   }
 };
-
 
 exports.excluirTodos = async (req, res) => {
   try {
