@@ -67,7 +67,6 @@ exports.excluirPaciente = async (req, res, next) => {
 };
 
 // Função para obter a base de pacientes existentes
-
 exports.obterBase = async (req, res) => {
   try {
     const { nome } = req.query;
