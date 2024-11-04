@@ -70,8 +70,6 @@ exports.getTempoMedioPorAno = async (req, res) => {
   }
 };
 
-
-
 // READ - Obter detalhes de uma anamnese específica
 exports.getAnamneseById = async (req, res) => {
   try {
@@ -118,10 +116,6 @@ exports.getAllAnamneses = async (req, res) => {
     res.status(400).json({ success: false, error: err.message });
   }
 };
-
-
-
-
 
 // UPDATE - Atualizar os detalhes de uma anamnese existente
 exports.updateAnamnese = async (req, res) => {
