@@ -1,6 +1,7 @@
 const Anamnese = require('../models/Anamnese');
 const moment = require('moment'); // Moment.js para manipulação de datas
 
+
 // CREATE - Criar uma nova anamnese
 exports.createAnamnese = async (req, res) => {
   try {
@@ -93,23 +94,24 @@ exports.getAllAnamneses = async (req, res) => {
     // Filtrar por especialidade
     if (especialidade) filter['anamnese.especialidade'] = especialidade;
 
-    // Filtrar por ano de dataAtendimento (usando regex se o campo for string)
+    // Filtrar por ano de dataAtendimento
     if (ano) {
       const anoRegex = new RegExp(`${ano}`, 'g');
       filter['anamnese.dataAtendimento'] = { $regex: anoRegex };
     }
 
-    // Filtrar por uma data específica de atendimento usando regex
+    // Filtrar por uma data específica de atendimento
     if (dataAtendimento) {
-      const dateRegex = new RegExp(`^${dataAtendimento}`); // começa com o dia especificado
+      const dateRegex = new RegExp(`^${dataAtendimento}`);
       filter['anamnese.dataAtendimento'] = { $regex: dateRegex };
     }
 
     // Filtrar por ID único
     if (idunico) filter.idunico = idunico;
 
-    // Consultar as anamneses usando os filtros
-    const anamneses = await Anamnese.find(filter);
+    // Consultar as anamneses usando lean() para melhorar desempenho
+    const anamneses = await Anamnese.find(filter).lean();
+
     res.status(200).json({ success: true, data: anamneses });
   } catch (err) {
     console.error('Erro ao listar todas as anamneses:', err.message);
