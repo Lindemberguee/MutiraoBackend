@@ -88,7 +88,15 @@ exports.getAnamneseById = async (req, res) => {
 // READ - Listar todas as anamneses
 exports.getAllAnamneses = async (req, res) => {
   try {
-    const { especialidade, ano, idunico, dataAtendimento } = req.query;
+    const {
+      especialidade,
+      ano,
+      idunico,
+      dataAtendimento,
+      searchTerm,
+      page = 1,
+      limit = 20,
+    } = req.query;
     const filter = {};
 
     // Filtrar por especialidade
@@ -109,15 +117,43 @@ exports.getAllAnamneses = async (req, res) => {
     // Filtrar por ID único
     if (idunico) filter.idunico = idunico;
 
-    // Consultar as anamneses usando lean() para melhorar desempenho
-    const anamneses = await Anamnese.find(filter).lean();
+    // Implementar a busca
+    if (searchTerm) {
+      const searchRegex = new RegExp(searchTerm, 'i'); // 'i' para case-insensitive
+      filter.$or = [
+        { nome: { $regex: searchRegex } },
+        { bairro: { $regex: searchRegex } },
+        { 'anamnese.especialidade': { $regex: searchRegex } },
+        // Adicione outros campos se necessário
+      ];
+    }
 
-    res.status(200).json({ success: true, data: anamneses });
+    // Paginação
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // Consultar as anamneses com paginação
+    const anamneses = await Anamnese.find(filter)
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+
+    // Obter o total de registros
+    const total = await Anamnese.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      data: anamneses,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (err) {
     console.error('Erro ao listar todas as anamneses:', err.message);
     res.status(400).json({ success: false, error: err.message });
   }
 };
+
+
 
 // UPDATE - Atualizar os detalhes de uma anamnese existente
 exports.updateAnamnese = async (req, res) => {
